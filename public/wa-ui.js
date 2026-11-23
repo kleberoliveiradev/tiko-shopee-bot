@@ -50,6 +50,7 @@
       nameBox,
       h('p', { style: 'margin:0 0 6px' }, h('b', {}, '1) O seu grupo (onde o robô posta com o seu link de afiliado)')),
       h('p', { class: 'sub', style: 'margin:0 0 8px' }, 'Crie o seu grupo no WhatsApp, gere o link de convite e cole aqui. Se o grupo só deixa administradores enviarem mensagens, torne o número do robô administrador. O robô já passa a buscar promoções da Shopee sozinho e postar nele.'),
+      h('p', { class: 'sub', style: 'margin:0 0 8px;color:#b45309' }, '⚠️ O WhatsApp não é oficial para postar em grupo automaticamente, então existe risco de o grupo ou o número serem suspensos — o robô foi ajustado para reduzir bastante esse risco, mas não dá para prometer zero. Grupo com só postagem automática, sem nenhuma conversa de verdade entre pessoas, é o que mais chama atenção do WhatsApp.'),
       h('div', { class: 'grid g2' }, h('label', {}, 'Link do seu grupo', linkDest), h('div', { style: 'display:flex;align-items:flex-end' }, btnAddDest)),
       listDest,
       h('div', { class: 'row', style: 'margin-top:10px' }, btnTest),
@@ -112,9 +113,10 @@
       btnTest.hidden = !(s.dests || []).length;
       stats.hidden = !open || !(s.sources || []).length;
       modeBox.hidden = !open || !(s.sources || []).length;
-      stats.textContent = s.linksSeen
+      const warm = s.warmingUp ? ` Número em fase de aquecimento: até ${s.maxPerHourNow}/hora e ${s.maxPerDayNow}/dia por enquanto, subindo aos poucos nas próximas semanas (protege o número e o grupo).` : '';
+      stats.textContent = (s.linksSeen
         ? `Ofertas vistas no grupo de origem nas últimas 24 h: ${s.linksSeen}.${s.sentToday ? ` Postadas hoje no seu grupo: ${s.sentToday}.` : ''}`
-        : 'Ainda não vi nenhuma oferta no grupo de origem. Assim que alguém postar um link da Shopee lá, ele aparece aqui.';
+        : 'Ainda não vi nenhuma oferta no grupo de origem. Assim que alguém postar um link da Shopee lá, ele aparece aqui.') + warm;
       schedule();
       if (onChange) onChange(s);
     }

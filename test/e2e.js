@@ -536,7 +536,10 @@ const ok = (name) => { passed++; console.log(`  ✓ ${name}`); };
     cookie = adminCookie;
     const ow = (await call('POST', '/api/bots', { name: 'So WA', channels: { telegram: false, whatsapp: true } })).json;
     const owb = `/api/bots/${ow.id}/whatsapp`;
-    await call('PUT', `/api/bots/${ow.id}`, { shopee: { appId: APP_ID, secret: SECRET }, schedule: { delaySec: 0, activeFrom: '00:00', activeTo: '00:00' }, filters: { onlyWithImage: false }, whatsapp: { accepted: true } });
+    // maxPerHour alto para este robô de teste: o modo "mix" pode clonar + buscar várias ofertas no
+    // mesmo ciclo, e o aquecimento (rampFactor) reduz o limite real nos primeiros dias — sem folga,
+    // um único ciclo "mix" consumiria sozinho todo o limite da hora e derrubaria o teste seguinte.
+    await call('PUT', `/api/bots/${ow.id}`, { shopee: { appId: APP_ID, secret: SECRET }, schedule: { delaySec: 0, activeFrom: '00:00', activeTo: '00:00' }, filters: { onlyWithImage: false }, whatsapp: { accepted: true, maxPerHour: 20 } });
     assert.equal((await call('POST', `${owb}/connect`, { phone: '11999997777' })).status, 200);
     await waitFor(async () => (await call('GET', owb)).json.state === 'open', 'WA-only conectado');
     assert.equal((await call('POST', `/api/bots/${ow.id}/enable`)).status === 200 && false, false);

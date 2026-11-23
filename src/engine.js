@@ -1,7 +1,7 @@
 'use strict';
 const { ShopeeClient, ShopeeError } = require('./shopee');
 const telegram = require('./telegram');
-const { render } = require('./message');
+const { render, pickWaTemplate } = require('./message');
 const { sleep } = require('./util');
 const { missingSetup, ensureSource, ensureSearch, ensureChannels } = require('./bots');
 const { effectiveKeywords, matchesNiches, nicheNames } = require('./niches');
@@ -227,8 +227,11 @@ class Engine {
 
   async publish(bot, p, link) {
     const html = render(bot.message.template, p, link);
+    // WhatsApp recebe um texto à parte: se o afiliado não personalizou o modelo, a estrutura varia a
+    // cada envio (não é sempre o mesmo "molde"), o que reduz o sinal de robô/spam no grupo.
+    const waHtml = render(pickWaTemplate(bot.message.template), p, link);
     if (!ensureChannels(bot).telegram) { // robô só de WhatsApp
-      this.wa?.enqueue(bot, { html, image: p.image });
+      this.wa?.enqueue(bot, { html: waHtml, image: p.image });
       return 1;
     }
     const chats = bot.telegram.chatId.split(',').filter(Boolean);
@@ -243,7 +246,7 @@ class Engine {
       }
     }
     if (!ok) throw lastErr;
-    this.wa?.enqueue(bot, { html, image: p.image }); // também posta no grupo de WhatsApp do cliente (não bloqueia o Telegram)
+    this.wa?.enqueue(bot, { html: waHtml, image: p.image }); // também posta no grupo de WhatsApp do cliente (não bloqueia o Telegram)
     return ok;
   }
 

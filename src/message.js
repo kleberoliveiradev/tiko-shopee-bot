@@ -12,6 +12,39 @@ De <s>{preco_original}</s>
 
 ⚠️ <b>Promoção sujeita a alteração a qualquer momento.</b>`;
 
+// Variações da mesma estrutura: mesmo conteúdo, "roupagem" diferente (ordem, frase do CTA, aviso).
+// Evita que toda mensagem saia com o padrão idêntico — grupos de WhatsApp marcam como spam
+// sequências de mensagens promocionais com formato sempre igual.
+const TEMPLATE_VARIANTS = [
+  DEFAULT_TEMPLATE,
+  `{chamada}
+
+🛍️ {titulo}
+
+~{preco_original}~ por apenas *{preco}* 💸
+
+👉 {link}
+
+_Promoção pode acabar a qualquer momento._`,
+  `🛍️ *{titulo}*
+
+{chamada}
+
+De ~{preco_original}~
+Por *{preco}* 💸
+
+🔗 Link: {link}`,
+];
+
+// Escolhe o modelo para o WhatsApp: se o afiliado não mexeu no modelo padrão, varia a estrutura
+// a cada envio (proteção contra o grupo ser marcado como spam por mensagens sempre idênticas).
+// Se o afiliado escreveu o próprio modelo, respeita exatamente como está escrito.
+function pickWaTemplate(customTemplate) {
+  const normalized = String(upgradeTemplate(customTemplate) || DEFAULT_TEMPLATE).replace(/\r/g, '').trim();
+  if (normalized !== DEFAULT_TEMPLATE.trim()) return normalized;
+  return TEMPLATE_VARIANTS[Math.floor(Math.random() * TEMPLATE_VARIANTS.length)];
+}
+
 // Modelo antigo: robôs que ainda o usam são atualizados automaticamente para o novo.
 const LEGACY_TEMPLATES = [`🔥 <b>{titulo}</b>
 
@@ -113,4 +146,4 @@ function render(template, product, link) {
   return out;
 }
 
-module.exports = { render, upgradeTemplate, DEFAULT_TEMPLATE, VARIABLES, SAMPLE_PRODUCT };
+module.exports = { render, upgradeTemplate, pickWaTemplate, DEFAULT_TEMPLATE, VARIABLES, SAMPLE_PRODUCT };

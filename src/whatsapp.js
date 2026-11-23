@@ -36,6 +36,8 @@ class WhatsApp {
   status(bot) {
     const s = this.sessions.get(bot.id);
     const st = this.store.st(bot.id).wa;
+    const ramp = this.rampFactor(st?.firstSentAt);
+    const w = bot.whatsapp || {};
     return {
       installed: this.installed(),
       state: s ? s.state : this.hasCreds(bot.id) ? 'connecting' : 'off',
@@ -48,6 +50,9 @@ class WhatsApp {
       linksSeen: this.recentLinks(bot).length,
       lastLinkAt: this.recentLinks(bot)[0]?.t || 0,
       sentToday: st && st.day === dayKey(bot.schedule.timezone) ? st.sent : 0,
+      warmingUp: ramp < 1,
+      maxPerHourNow: Math.max(1, Math.round((w.maxPerHour || 8) * ramp)),
+      maxPerDayNow: Math.max(1, Math.round((w.maxPerDay || 40) * ramp)),
     };
   }
 
@@ -248,23 +253,46 @@ class WhatsApp {
     return groups.sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
   }
 
+  // "Esquenta" do número/grupo: nos primeiros dias depois do 1º envio, usa limites bem mais baixos
+  // que o configurado, subindo aos poucos. Número/grupo novo postando no volume máximo de cara é
+  // um dos sinais que mais derruba grupo e número no WhatsApp.
+  rampFactor(firstSentAt) {
+    if (!firstSentAt) return 0.5; // ainda nem mandou a 1ª mensagem: trata como dia 0
+    const days = (Date.now() - firstSentAt) / 86400000;
+    if (days < 3) return 0.5;
+    if (days < 7) return 0.75;
+    return 1;
+  }
+
   canSend(bot, s) {
     const w = bot.whatsapp;
     if (!inWindow(bot.schedule.activeFrom, bot.schedule.activeTo, bot.schedule.timezone)) return 'fora do horário de funcionamento';
-    const now = Date.now();
-    s.sentTimes = s.sentTimes.filter((t) => now - t < 3600000);
-    if (s.sentTimes.length >= w.maxPerHour) return `limite de ${w.maxPerHour} mensagens por hora`;
     const st = this.store.st(bot.id);
     const day = dayKey(bot.schedule.timezone);
-    if (!st.wa || st.wa.day !== day) st.wa = { day, sent: 0 };
-    if (st.wa.sent >= w.maxPerDay) return `limite de ${w.maxPerDay} mensagens por dia`;
+    if (!st.wa || st.wa.day !== day) st.wa = { day, sent: 0, firstSentAt: st.wa?.firstSentAt };
+    const ramp = this.rampFactor(st.wa.firstSentAt);
+    const maxPerHour = Math.max(1, Math.round(w.maxPerHour * ramp));
+    const maxPerDay = Math.max(1, Math.round(w.maxPerDay * ramp));
+    const now = Date.now();
+    s.sentTimes = s.sentTimes.filter((t) => now - t < 3600000);
+    // O aviso mostra sempre o limite que a pessoa configurou (w.maxPerHour/maxPerDay); quem bloqueia de
+    // fato, nos primeiros dias, é o limite mais baixo do aquecimento (maxPerHour/maxPerDay ramped acima).
+    if (s.sentTimes.length >= maxPerHour) return `limite de ${w.maxPerHour} mensagens por hora${ramp < 1 ? ' (número em fase de aquecimento, sobe aos poucos)' : ''}`;
+    if (st.wa.sent >= maxPerDay) return `limite de ${w.maxPerDay} mensagens por dia${ramp < 1 ? ' (número em fase de aquecimento, sobe aos poucos)' : ''}`;
     return '';
   }
 
   count(bot, s) {
     s.sentTimes.push(Date.now());
     const st = this.store.st(bot.id);
+    if (!st.wa.firstSentAt) st.wa.firstSentAt = Date.now();
     st.wa.sent++;
+    // A cada ~6 mensagens, uma pausa mais longa e aleatória — quebra o ritmo "metrônomo" de robô.
+    s.sinceLongPause = (s.sinceLongPause || 0) + 1;
+    if (s.sinceLongPause >= 5 + Math.floor(Math.random() * 3)) {
+      s.sinceLongPause = 0;
+      s.extraPauseMs = Math.round(rnd(180000, 480000) * scale()); // 3 a 8 minutos
+    }
     this.store.saveState();
   }
 
@@ -326,7 +354,9 @@ class WhatsApp {
           }
           if (await this.sendOne(bot, s, jid, item)) this.log(id, 'ok', 'oferta enviada ao grupo de WhatsApp.');
           if (s.fails >= 5) break;
-          await wait(rnd(w.minGapSec, w.minGapSec * 1.6) * 1000);
+          const gapMs = rnd(w.minGapSec, w.minGapSec * 1.6) * 1000 + (s.extraPauseMs || 0);
+          s.extraPauseMs = 0;
+          await wait(gapMs);
         }
         if (s.fails >= 5) {
           s.queue.length = 0;
