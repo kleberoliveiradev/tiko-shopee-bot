@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Robô de Ofertas · Painel</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23ee4d2d%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-size=%2718%27 text-anchor=%27middle%27%3E🛒%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<!-- LOGIN / PRIMEIRO ACESSO -->
+<div id="auth" class="center split" hidden>
+  <div class="authart">
+    <p class="kicker">Robô de ofertas</p>
+    <h2>Suas promoções da Shopee, no piloto automático.</h2>
+    <p>Cadastre o cliente, escolha os assuntos e deixe o robô postar no Telegram e no WhatsApp.</p>
+  </div>
+  <div class="authform">
+  <form class="card auth" id="authForm">
+    <div class="brand"><span class="logo">🛒</span> Robô de Ofertas</div>
+    <h1 id="authTitle">Entrar</h1>
+    <p class="mut" id="authSub">Painel do administrador.</p>
+    <div class="grid" style="margin-top:14px">
+      <label id="codeWrap" hidden>Código de configuração
+        <input id="authCode" autocomplete="off" placeholder="Aparece no terminal/logs do servidor">
+      </label>
+      <label>Senha
+        <input id="authPass" type="password" autocomplete="current-password" required>
+      </label>
+      <button class="btn primary block" id="authBtn" type="submit">Entrar</button>
+      <div class="msg err" id="authErr" hidden></div>
+    </div>
+  </form>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" hidden>
+  <header class="top">
+    <div class="brand"><span class="logo">🛒</span> Robô de Ofertas <small>· Painel do administrador</small></div>
+    <button class="btn" id="logout">Sair</button>
+  </header>
+  <div class="layout">
+    <aside class="side">
+      <button class="btn primary block" id="newBot">+ Novo robô</button>
+      <ul id="botList"></ul>
+      <details class="card" id="mgrBox" style="margin-top:16px;padding:12px 14px">
+        <summary id="mgrStatus">🤖 Criação automática de bots</summary>
+        <p class="sub" style="margin:10px 0 6px">Configure uma vez. Depois cada afiliado cria o próprio bot com um clique, sem passar pelo @BotFather.</p>
+        <ol class="sub" style="padding-left:18px;margin:0 0 10px">
+          <li>No Telegram, abra <b>@BotFather</b>, envie <code>/newbot</code> e crie um bot seu (ex.: "Gerente de Ofertas").</li>
+          <li>Abra <code>t.me/BotFather?startapp</code>, escolha esse bot e ligue o <b>Bot Management Mode</b>.</li>
+          <li>Cole abaixo o token desse bot e salve.</li>
+        </ol>
+        <input id="mgrToken" type="password" autocomplete="new-password" placeholder="Token do bot gerenciador">
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary" id="mgrSave" type="button">Salvar</button>
+          <button class="btn danger" id="mgrRemove" type="button" hidden>Remover</button>
+        </div>
+        <div class="msg" id="mgrMsg" hidden></div>
+      </details>
+    </aside>
+
+    <main>
+      <div id="empty" class="empty">
+        <h2>Nenhum robô ainda</h2>
+        <p>Crie um robô, mande o link de convite para o afiliado e ele cadastra os dados dele numa página separada.</p>
+      </div>
+
+      <section id="editor" hidden>
+        <div class="spread">
+          <div class="row" style="flex:1;min-width:240px">
+            <input id="botName" data-path="name" style="max-width:340px;font-size:18px;font-weight:700" maxlength="60" aria-label="Nome do robô">
+            <span class="pill" id="statusPill">pausado</span>
+          </div>
+          <div class="row">
+            <label class="check" style="gap:10px">Robô ligado
+              <span class="switch"><input type="checkbox" id="enabledSwitch"><i></i></span>
+            </label>
+            <button class="btn primary" id="saveBtn">Salvar alterações</button>
+          </div>
+        </div>
+
+        <nav class="tabs" id="tabs">
+          <button data-tab="conn" class="on">Conexões</button>
+          <button data-tab="search">Busca e filtros</button>
+          <button data-tab="msg">Mensagem</button>
+          <button data-tab="sched">Agenda</button>
+          <button data-tab="plan">Plano</button>
+          <button data-tab="client">Link do afiliado</button>
+          <button data-tab="act">Atividade</button>
+        </nav>
+
+        <!-- CONEXÕES -->
+        <div class="tab" data-panel="conn">
+          <div class="card">
+            <h3>Canais contratados</h3>
+            <p class="sub">Escolha onde as ofertas são publicadas para este cliente: Telegram, WhatsApp ou os dois. No WhatsApp o robô busca promoções da Shopee e posta no grupo do próprio cliente; se quiser, também clona as ofertas de outro grupo de WhatsApp.</p>
+            <div class="chanbox">
+              <label class="check"><input type="checkbox" data-path="channels.telegram" id="chanTg" checked> Telegram</label>
+              <label class="check"><input type="checkbox" data-path="channels.whatsapp" id="chanWa"> WhatsApp (postar no grupo do cliente; clonar outro grupo é opcional)</label>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Shopee Afiliados</h3>
+            <p class="sub">Credenciais da Open API (painel de afiliados → Open API). Normalmente o próprio afiliado preenche pela página dele.</p>
+            <div class="grid g3">
+              <label>AppID <input data-path="shopee.appId" autocomplete="off" inputmode="numeric"></label>
+              <label>Secret <input data-path="shopee.secret" data-secret data-set="secretSet" data-hint="secretHint" type="password" autocomplete="new-password"></label>
+              <label>SubID de rastreio <input data-path="shopee.subId" maxlength="30" placeholder="robo"><span class="hint">Aparece nos relatórios de conversão.</span></label>
+            </div>
+            <div class="row" style="margin-top:14px"><button class="btn" id="testShopee">Testar conexão Shopee</button></div>
+            <div class="msg" id="shopeeMsg" hidden></div>
+          </div>
+          <div class="card">
+            <h3>Telegram</h3>
+            <p class="sub">Crie o bot no @BotFather, adicione-o ao grupo/canal como administrador e informe o ID.</p>
+            <div class="grid g2">
+              <label>Token do bot <input data-path="telegram.token" data-secret data-set="tokenSet" data-hint="tokenHint" type="password" autocomplete="new-password"></label>
+              <label>ID do grupo / canal <input data-path="telegram.chatId" placeholder="-1001234567890 ou @meucanal"><span class="hint">Vários destinos: separe por vírgula.</span></label>
+            </div>
+            <div class="row" style="margin-top:14px">
+              <button class="btn" id="detectChats">Detectar grupo</button>
+              <button class="btn" id="testTelegram">Enviar mensagem de teste</button>
+            </div>
+            <div class="chips" id="chatChips" style="margin-top:10px"></div>
+            <div class="msg" id="tgMsg" hidden></div>
+          </div>
+          <div class="card" id="waCard">
+            <h3>WhatsApp: grupo do cliente e clonagem (opcional)</h3>
+            <div id="waMount"></div>
+          </div>
+        </div>
+
+        <!-- BUSCA -->
+        <div class="tab" data-panel="search" hidden>
+          <div class="card">
+            <h3>Clonar canal de ofertas</h3>
+            <p class="sub">Canais <b>públicos</b> do Telegram (um por linha, ex.: <code>t.me/nomedocanal</code>). O robô lê só os links da Shopee, busca o produto de novo na Shopee e posta com o link de afiliado e o modelo de mensagem deste robô.</p>
+            <textarea data-path="source.channels" data-type="lines" rows="3" placeholder="t.me/canaldeofertas"></textarea>
+            <div class="grid g2" style="margin-top:12px">
+              <label>Como usar os canais
+                <select data-path="source.mode"><option value="only">Só o que os canais publicam</option><option value="mix">Canais primeiro, completar com palavras-chave</option></select></label>
+              <label class="check" style="align-self:end"><input type="checkbox" data-path="source.applyFilters"> Aplicar os filtros de qualidade</label>
+            </div>
+            <div class="row" style="margin-top:12px"><button class="btn" id="testSource" type="button">Testar canal</button></div>
+            <div class="msg" id="srcMsg" hidden></div>
+          </div>
+          <div class="card">
+            <h3>O que procurar</h3>
+            <p class="sub"><b>Nicho:</b> o robô só pesquisa e posta produtos dos nichos marcados (até 6). Nada marcado = variedades.</p>
+            <div id="nicheMount"></div>
+            <p class="sub" style="margin-top:6px"><b>Palavras extras</b> (opcional, uma por linha). São somadas ao nicho.</p>
+            <textarea data-path="search.keywords" data-type="lines" rows="4" placeholder="lençol queen 400 fios&#10;toalha de banho gigante"></textarea>
+            <div class="grid g4" style="margin-top:14px">
+              <label>Ordenar a busca por
+                <select data-path="search.sortType" data-type="number">
+                  <option value="2">Mais vendidos</option><option value="1">Relevância</option>
+                  <option value="5">Maior comissão</option><option value="4">Menor preço</option><option value="3">Maior preço</option>
+                </select></label>
+              <label>Lista da Shopee
+                <select data-path="search.listType" data-type="number"><option value="0">Todos os produtos</option><option value="2">Top performance</option></select></label>
+              <label>Páginas por palavra <input type="number" min="1" max="5" data-path="search.pagesPerKeyword" data-type="number"></label>
+              <label>Priorizar na hora de postar
+                <select data-path="search.ranking"><option value="desconto">Maior desconto</option><option value="vendas">Mais vendidos</option><option value="comissao">Maior comissão</option><option value="misto">Misto</option></select></label>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Filtros de qualidade</h3>
+            <p class="sub">Só entra no grupo o que passar em todos. Use 0 para desativar um filtro.</p>
+            <div class="grid g4">
+              <label>Desconto mínimo (%) <input type="number" min="0" max="95" data-path="filters.minDiscount" data-type="number"></label>
+              <label>Nota mínima (0–5) <input type="number" min="0" max="5" step="0.1" data-path="filters.minRating" data-type="number"></label>
+              <label>Vendas mínimas <input type="number" min="0" data-path="filters.minSales" data-type="number"></label>
+              <label>Comissão mínima (%) <input type="number" min="0" max="100" step="0.5" data-path="filters.minCommission" data-type="number"></label>
+              <label>Preço mínimo (R$) <input type="number" min="0" data-path="filters.minPrice" data-type="number"></label>
+              <label>Preço máximo (R$) <input type="number" min="0" data-path="filters.maxPrice" data-type="number"></label>
+              <label style="grid-column:span 2">Bloquear palavras no título <input data-path="filters.blockWords" data-type="lines" placeholder="separe por vírgula: usado, réplica, capa"></label>
+            </div>
+            <label class="check" style="margin-top:14px"><input type="checkbox" data-path="filters.onlyWithImage"> Só postar produtos com imagem</label>
+            <div class="row" style="margin-top:16px">
+              <button class="btn" id="previewBtn">Simular busca (não posta nada)</button>
+              <small class="mut">Salva e mostra o que seria postado agora.</small>
+            </div>
+            <div id="previewOut" class="list" style="margin-top:14px"></div>
+          </div>
+        </div>
+
+        <!-- MENSAGEM -->
+        <div class="tab" data-panel="msg" hidden>
+          <div class="card">
+            <h3>Modelo da mensagem</h3>
+            <p class="sub">Aceita <code>&lt;b&gt;</code> negrito, <code>&lt;i&gt;</code> itálico, <code>&lt;s&gt;</code> riscado. Linhas com variável vazia (ex.: sem nota) somem sozinhas.</p>
+            <div class="grid g2" style="align-items:start">
+              <div>
+                <textarea id="tplText" data-path="message.template" rows="12" style="font-family:var(--mono);font-size:13.5px"></textarea>
+                <div class="chips" id="varChips" style="margin-top:10px"></div>
+                <div class="row" style="margin-top:12px"><button class="btn" id="tplReset">Restaurar modelo padrão</button></div>
+              </div>
+              <div><small class="mut">Pré-visualização (produto de exemplo)</small><div class="tg" id="tplPreview" style="margin-top:8px"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AGENDA -->
+        <div class="tab" data-panel="sched" hidden>
+          <div class="card">
+            <h3>Frequência</h3>
+            <p class="sub">A cada ciclo o robô busca, filtra e publica algumas ofertas, com pausa entre elas. Evite exagerar: grupos que recebem spam perdem membros.</p>
+            <div class="grid g4">
+              <label>Ciclo a cada (min) <input type="number" min="5" max="1440" data-path="schedule.intervalMinutes" data-type="number"></label>
+              <label>Ofertas por ciclo <input type="number" min="1" max="10" data-path="schedule.postsPerCycle" data-type="number"></label>
+              <label>Pausa entre ofertas (s) <input type="number" min="1" max="120" data-path="schedule.delaySec" data-type="number"><span class="hint">Telegram limita ~20 msg/min por grupo.</span></label>
+              <label>Não repetir produto por (dias) <input type="number" min="1" max="90" data-path="schedule.dedupeDays" data-type="number"></label>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Horário de funcionamento</h3>
+            <p class="sub">Fora dessa janela o robô fica quieto. Início = fim significa 24 horas.</p>
+            <div class="grid g3">
+              <label>Das <input type="time" data-path="schedule.activeFrom"></label>
+              <label>Até <input type="time" data-path="schedule.activeTo"></label>
+              <label>Fuso horário <input data-path="schedule.timezone" placeholder="America/Sao_Paulo"></label>
+            </div>
+          </div>
+        </div>
+
+        <!-- PLANO -->
+        <div class="tab" data-panel="plan" hidden>
+          <div class="card">
+            <div class="row" style="align-items:center;justify-content:space-between">
+              <h3 style="margin:0">Plano do cliente</h3>
+              <span class="pill" id="planPill">—</span>
+            </div>
+            <p class="sub" id="planLine" style="margin:10px 0 0"></p>
+            <label class="check" style="margin:14px 0 0"><input type="checkbox" id="planManaged"> Controlar o plano deste cliente (o robô só posta com o plano ativo)</label>
+            <div class="row" style="margin-top:16px"><button class="btn primary" id="planGrant" type="button">Recebi o Pix: ativar 30 dias</button></div>
+            <div class="row" style="margin-top:12px;align-items:flex-end">
+              <label>Adicionar dias <input type="number" id="planDays" min="1" max="366" value="30" style="max-width:120px"></label>
+              <button class="btn" id="planAdd" type="button">Adicionar</button>
+              <button class="btn danger" id="planRevoke" type="button">Desativar agora</button>
+            </div>
+            <p class="sub" style="margin:12px 0 0">Renovar antes de vencer soma os dias ao vencimento atual. Renovar depois de vencer conta 30 dias a partir de hoje. Na primeira ativação, se o cliente já terminou o cadastro, o robô liga sozinho.</p>
+            <div class="msg" id="planMsg" hidden></div>
+          </div>
+          <div class="card">
+            <h3>Avisar o cliente</h3>
+            <p class="sub">O robô registra o aviso de vencimento (3 dias antes, 24 horas antes e quando vence) na página do cliente e, se ele usa o robô numa conversa privada do Telegram, manda lá também. Em grupo o aviso não é enviado, para o público não ver. Guarde o WhatsApp do cliente para avisar você mesmo com um clique.</p>
+            <div class="grid g2">
+              <label>WhatsApp do cliente <input id="planContact" autocomplete="off" inputmode="tel" placeholder="11 94678-3584"></label>
+              <div class="row" style="align-items:flex-end"><button class="btn" id="planSaveContact" type="button">Salvar número</button><a class="btn" id="planWaLink" target="_blank" rel="noopener noreferrer" hidden>Avisar no WhatsApp</a></div>
+            </div>
+          </div>
+          <div class="card"><h3>Histórico</h3><div id="planHist" class="list" style="margin-top:10px"></div></div>
+        </div>
+
+        <!-- LINK DO AFILIADO -->
+        <div class="tab" data-panel="client" hidden>
+          <div class="card">
+            <h3>Página de cadastro do afiliado</h3>
+            <p class="sub">Mande este link para a pessoa dona da conta de afiliado. Nele ela informa o AppID/Secret da Shopee, o bot e o grupo do Telegram, escolhe o nicho e liga o robô — sem acessar este painel.</p>
+            <div class="row"><input id="inviteUrl" readonly style="flex:1;min-width:260px"><button class="btn" id="copyInvite">Copiar link</button></div>
+            <div class="note" style="margin-top:14px">Quem tem o link consegue editar as credenciais deste robô. Trate como senha. Se vazar, gere outro: o antigo deixa de funcionar na hora.</div>
+            <div class="row" style="margin-top:14px"><button class="btn danger" id="regen">Gerar novo link</button><button class="btn danger" id="deleteBot">Excluir este cliente</button></div>
+          </div>
+        </div>
+
+        <!-- ATIVIDADE -->
+        <div class="tab" data-panel="act" hidden>
+          <div class="hero live">
+            <p class="kicker">Resumo de hoje</p>
+            <h2 id="heroTitle" style="font-size:26px">Atividade do robô</h2>
+            <p class="mut" id="heroSub" style="margin:6px 0 0">Veja o que o robô fez e rode um ciclo quando quiser.</p>
+          </div>
+          <div class="grid g4" style="margin-top:16px">
+            <div class="stat"><span>Status</span><b id="sStatus">—</b></div>
+            <div class="stat"><span>Próximo ciclo</span><b id="sNext">—</b></div>
+            <div class="stat"><span>Ofertas publicadas</span><b id="sPosted">0</b></div>
+            <div class="stat"><span>Último erro</span><b id="sErr" style="font-size:13px;font-weight:600;color:var(--mut)">—</b></div>
+          </div>
+          <div class="card" style="margin-top:16px">
+            <div class="row">
+              <button class="btn primary" id="runNow">Rodar um ciclo agora</button>
+              <small class="mut">Publica de verdade, ignorando o intervalo.</small>
+            </div>
+          </div>
+          <div class="card">
+            <h3>Postar links específicos</h3>
+            <p class="sub">Cole até 5 links de produtos da Shopee (um por linha). O robô converte para o seu link de afiliado e publica.</p>
+            <textarea id="linksBox" rows="3" placeholder="https://shopee.com.br/product/123/456&#10;https://s.shopee.com.br/xxxx"></textarea>
+            <div class="row" style="margin-top:10px"><button class="btn" id="postLinks">Converter e publicar</button></div>
+            <div id="linksOut" class="list" style="margin-top:10px"></div>
+          </div>
+          <div class="card"><h3>Últimas publicações</h3><div id="recent" class="list" style="margin-top:10px"></div></div>
+          <div class="card"><h3>Registro</h3><div id="logs" class="logs" style="margin-top:10px"></div></div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script src="/static/common.js"></script>
+<script src="/static/wa-ui.js"></script>
+<script src="/static/niche-ui.js"></script>
+<script src="/static/admin.js"></script>
+</body>
+</html>

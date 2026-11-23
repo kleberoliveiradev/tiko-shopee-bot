@@ -1,0 +1,62 @@
+'use strict';
+// Valida o painel do administrador num DOM simulado (jsdom).
+const assert = require('node:assert/strict');
+const fs = require('fs'); const os = require('os'); const path = require('path');
+const { JSDOM } = require('/tmp/jsd/node_modules/jsdom');
+const { startShopeeMock, startTelegramMock } = require('./mocks');
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const waitFor = async (fn, label, ms = 8000) => { const t0 = Date.now(); while (Date.now() - t0 < ms) { try { const v = await fn(); if (v) return v; } catch { /* retry */ } await sleep(100); } throw new Error('Timeout: ' + label); };
+let n = 0; const ok = (m) => { n++; console.log('  ✓ ' + m); };
+(async () => {
+  const shopee = await startShopeeMock(); const tg = await startTelegramMock();
+  Object.assign(process.env, { SHOPEE_API_URL: shopee.url, TELEGRAM_API_URL: tg.url, TELEGRAM_WEB_URL: tg.url, WA_DRIVER: path.join(__dirname, 'wa-fake.js'), WA_TIME_SCALE: '0',
+    DATA_DIR: fs.mkdtempSync(path.join(os.tmpdir(), 'uia-')), ADMIN_PASSWORD: 'senha-super-123', PORT: '0', HOST: '127.0.0.1', QUIET: '1', SCHEDULER_TICK_MS: '300', PLAN_CHARGE_NEW: '0', MANAGER_POLL_SEC: '0' });
+  const app = await require('../server').start();
+  const base = `http://127.0.0.1:${app.port}`;
+  const lr = await fetch(base + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: 'senha-super-123' }) });
+  const cookie = lr.headers.get('set-cookie').split(';')[0];
+  const api = (m, u, b) => fetch(base + u, { method: m, headers: { 'Content-Type': 'application/json', Cookie: cookie }, body: m === 'GET' ? undefined : JSON.stringify(b || {}) }).then((r) => r.json());
+  const solo = (await api('POST', '/api/bots', { name: 'Sem WhatsApp', channels: { telegram: true, whatsapp: false } })).id;
+  const both = (await api('POST', '/api/bots', { name: 'Com WhatsApp' })).id;
+  assert.equal((await api('POST', '/api/bots', { name: 'x', channels: { telegram: false, whatsapp: false } })).error?.includes('pelo menos um canal'), true); ok('API recusa robô sem nenhum canal');
+
+  const errors = [];
+  const dom = await JSDOM.fromURL(base + '/', { runScripts: 'outside-only', pretendToBeVisual: true, cookieJar: undefined,
+    beforeParse(w) { w.fetch = (u, o = {}) => fetch(new URL(u, base), { ...o, headers: { ...(o.headers || {}), Cookie: cookie } }); w.addEventListener('error', (e) => errors.push(e.message)); } });
+  const { window } = dom; const d = window.document; const $ = (s) => d.querySelector(s);
+  for (const f of ['common.js', 'wa-ui.js', 'niche-ui.js', 'admin.js']) window.eval(fs.readFileSync(path.join(__dirname, '../public', f), 'utf8'));
+  await waitFor(() => !$('#app').hidden && $('#botList').children.length === 2, 'lista de robôs');
+  ok('painel entra logado e lista os 2 robôs');
+  const open = async (id) => { [...d.querySelectorAll('#botList button')].find((b) => !b.classList.contains('del') && b.textContent.includes(id === solo ? 'Sem WhatsApp' : 'Com WhatsApp')).click(); await sleep(400); };
+  await open(solo);
+  await waitFor(() => $('#botName').value === 'Sem WhatsApp', 'abriu robô sem WA');
+  assert.equal($('#waCard').hidden, true); ok('sem WhatsApp contratado: cartão do WhatsApp fica escondido');
+  $('#chanWa').checked = true; $('#chanWa').dispatchEvent(new window.Event('change'));
+  assert.equal($('#waCard').hidden, false); ok('marcar WhatsApp mostra o cartão na hora');
+  await open(both);
+  await waitFor(() => $('#botName').value === 'Com WhatsApp', 'abriu robô com WA');
+  assert.equal($('#waCard').hidden, false);
+  assert.ok($('#waMount').textContent.includes('Link do seu grupo') && $('#waMount').textContent.includes('grupo de origem')); ok('com WhatsApp: cartão com grupo de origem e grupo do cliente aparece');
+  $('#chanTg').checked = false; $('#chanTg').dispatchEvent(new window.Event('change'));
+  $('#chanWa').checked = false; $('#chanWa').dispatchEvent(new window.Event('change'));
+  assert.equal($('#chanTg').checked, true); ok('não deixa desmarcar os dois canais ao mesmo tempo');
+  $('#chanWa').checked = true; $('#chanWa').dispatchEvent(new window.Event('change'));
+  $('#saveBtn').click();
+  await waitFor(() => api('GET', `/api/bots/${both}`).then((r) => r.bot.channels.telegram === true && r.bot.channels.whatsapp === true), 'salvou');
+  ok('salvar mantém Telegram ligado e WhatsApp contratado');
+  assert.equal($('#deleteBot').textContent, 'Excluir este cliente'); ok('botão "Excluir este cliente" presente');
+  d.querySelector('#tabs button[data-tab="plan"]').click();
+  assert.equal(d.querySelector('.tab[data-panel="plan"]').hidden, false); assert.equal($('#planPill').textContent, 'sem controle'); assert.equal($('#planGrant').disabled, true); ok('aba Plano: cliente sem controle começa com os botões travados');
+  $('#planManaged').checked = true; $('#planManaged').dispatchEvent(new window.Event('change'));
+  await waitFor(() => $('#planPill').textContent === 'não ativado', 'controle ligado'); assert.equal($('#planGrant').disabled, false); ok('ligar o controle mostra "não ativado" e libera os botões');
+  $('#planGrant').click();
+  await waitFor(() => $('#planPill').textContent === 'ativo', 'plano ativado');
+  assert.match($('#planLine').textContent, /faltam 30 dias/); assert.equal((await api('GET', `/api/bots/${both}`)).bot.plan.daysLeft, 30); ok('"ativar 30 dias" ativa o plano e mostra os dias restantes');
+  $('#planContact').value = '11 94678-3584'; $('#planSaveContact').click();
+  await waitFor(() => !$('#planWaLink').hidden, 'link do WhatsApp');
+  assert.match($('#planWaLink').href, /^https:\/\/wa\.me\/5511946783584\?text=/); ok('com o número do cliente aparece o botão "Avisar no WhatsApp"');
+  assert.ok($('#planHist').textContent.includes('+30 dias')); ok('histórico mostra a ativação');
+  assert.ok([...d.querySelectorAll('#botList small')].some((x) => x.textContent === '30d')); ok('a lista de clientes mostra os dias restantes');
+  assert.deepEqual(errors, []); ok('nenhum erro de JavaScript');
+  console.log(`\n✅ ${n} verificações do painel passaram.`); process.exit(0);
+})().catch((e) => { console.error('\n❌', e.stack || e); process.exit(1); });

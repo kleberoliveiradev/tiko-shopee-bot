@@ -1,0 +1,18 @@
+ROBO DE OFERTAS SHOPEE - COMO USAR (Windows)
+
+1) Clique com o botao direito no .zip > "Extrair tudo..." (nao abra de dentro do zip).
+2) Abra a pasta extraida e de dois cliques em:  Iniciar Robo.bat
+   - Se pedir Node.js: instale a versao LTS (nodejs.org) e de dois cliques de novo.
+3) O painel abre no navegador. Primeiro acesso: codigo  robo2026  + crie uma senha.
+4) Clique em "+ Novo robo", escolha o nicho. Escolha o canal do cliente: Telegram, WhatsApp ou os dois. No WhatsApp o robo le um grupo de ofertas e posta no grupo do cliente.
+5) Na aba "Link do afiliado", copie o link e envie para o cliente.
+
+O CLIENTE SO PRECISA:
+   - Colar o AppID e o Secret da Shopee;
+   - Tocar em "Criar meu robo no Telegram";
+   - Criar um grupo e adicionar o robo como administrador.
+O robo detecta o grupo, testa tudo e liga sozinho.
+
+Importante: o robo so posta enquanto a janela preta estiver aberta e o PC ligado.
+Para funcionar 24h e para o link de convite abrir no celular do cliente,
+o robo precisa ficar num servidor online (veja o README.md).

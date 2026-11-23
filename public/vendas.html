@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TIKO · Robô de ofertas da Shopee para afiliados</title>
+<meta name="description" content="O robô garimpa as ofertas da Shopee, troca pelo seu link de afiliado e posta sozinho nos seus grupos de WhatsApp e Telegram. Teste 7 dias grátis.">
+<meta name="theme-color" content="#f4f4f2">
+<meta property="og:title" content="TIKO · Divulgue seus links da Shopee no automático">
+<meta property="og:description" content="Robô de ofertas para afiliados da Shopee: garimpa, troca pelo seu link e posta no WhatsApp e no Telegram, 24 horas por dia.">
+<meta property="og:type" content="website">
+<link rel="preload" href="/static/fonts/instrument-sans-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/static/fonts/instrument-sans-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/static/vendas.css">
+</head>
+<body>
+
+<header class="nav">
+  <div class="nav__bar">
+    <a class="nav__logo" href="#topo" aria-label="TIKO, início"><img id="navLogo" src="/static/img/tiko-logo-animado-intro.svg" alt="TIKO" width="143" height="42"></a>
+    <div class="nav__right">
+      <button class="nav__link" type="button" id="btnEntrar">Entrar</button>
+      <a class="btn btn--dark btn--sm" href="#planos" data-cta>Testar grátis <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+    </div>
+  </div>
+</header>
+
+<main id="topo">
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero__glow hero__glow--a"></div><div class="hero__glow hero__glow--b"></div>
+    <div class="wrap hero__grid">
+      <div class="hero__copy">
+        <span class="badge"><i class="dot"></i> Para afiliados da Shopee</span>
+        <h1 class="h1">Divulgue seus links da Shopee <mark>no automático.</mark></h1>
+        <p class="lead">O robô garimpa as ofertas da Shopee, troca pelo seu link de afiliado e posta sozinho nos seus grupos de WhatsApp e no Telegram. Você liga uma vez e ele trabalha 24 horas por dia.</p>
+        <ul class="checks">
+          <li>Só sai oferta com o desconto mínimo que você definir</li>
+          <li>Seu link em cada oferta, com foto, preço e desconto</li>
+          <li>WhatsApp e Telegram no mesmo painel</li>
+        </ul>
+        <div class="cta-row">
+          <a class="btn btn--dark" href="#planos" data-cta>Testar 7 dias grátis <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <a class="btn btn--light" href="#planos">Ver planos</a>
+        </div>
+        <ul class="micro"><li>Não paga nada hoje</li><li>Pronto em 5 minutos</li><li>Cancele quando quiser</li></ul>
+      </div>
+
+      <div class="stage" aria-label="Exemplo de como as ofertas aparecem no grupo">
+        <div class="phone">
+          <div class="phone__top"><span>9:41</span><span class="phone__island"></span></div>
+          <div class="phone__head">
+            <span class="avatar">OD</span>
+            <div><b>Ofertas Shopee do Dia</b><small>1.248 participantes</small></div>
+          </div>
+          <div class="chat">
+            <div class="bubble">
+              <img src="/static/img/cozinha.jpg" alt="" width="242" height="118" loading="eager">
+              <div class="bubble__txt">
+                <b>Air Fryer digital 4L antiaderente</b>
+                <s>R$ 399,90</s><br>
+                <span class="price">POR R$ 229,90 (43% OFF)</span><br>
+                <span class="lnk">s.shopee.com.br/7AbQ2x</span>
+                <span class="time">14:02 ✓✓</span>
+              </div>
+            </div>
+            <div class="bubble">
+              <img src="/static/img/beleza.jpg" alt="" width="242" height="118" loading="lazy">
+              <div class="bubble__txt">
+                <b>Sérum facial vitamina C 30ml</b>
+                <s>R$ 89,90</s><br>
+                <span class="price">POR R$ 49,90 (44% OFF)</span><br>
+                <span class="lnk">s.shopee.com.br/2Xk9pQ</span>
+                <span class="time">14:07 ✓✓</span>
+              </div>
+            </div>
+          </div>
+          <div class="phone__input"><i></i><u></u></div>
+        </div>
+        <div class="float float--a"><div class="row"><i class="dot"></i><b>Envio automático ligado</b></div><small>Próximo: Achadinhos de beleza</small></div>
+        <div class="float float--b"><small style="margin:0">Link trocado pelo seu</small><s>shopee.com.br/produto/i.8823…</s><br><span class="pill">✓ s.shopee.com.br/2Xk9pQ</span></div>
+        <div class="float float--c"><span class="duo"><i></i><i></i></span><b>Publicado agora em 2 destinos</b></div>
+
+        <button class="mascot" type="button" id="mascot" aria-label="Rever a animação do mascote TIKO">
+          <img id="mascotImg" src="/static/img/tiko-mascote-intro.svg" width="330" height="222" alt="Mascote TIKO, um robô sorridente, recebendo um ticket de desconto">
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- NÚMEROS -->
+  <section class="sec">
+    <div class="wrap">
+      <div class="stats rv">
+        <div class="stat"><b>24 h</b><p>Rodando sozinho, sem celular ligado</p></div>
+        <div class="stat"><b>2 canais</b><p>WhatsApp e Telegram, no mesmo painel</p></div>
+        <div class="stat"><b>5 min</b><p>Do cadastro à primeira oferta</p></div>
+        <div class="stat"><b>7 dias</b><p>Para testar, sem pagar nada</p></div>
+      </div>
+      <div class="niches rv">
+        <span>Nichos que o robô garimpa por você</span>
+        <ul class="chips">
+          <li>Eletrônicos</li><li>Casa e cozinha</li><li>Beleza</li><li>Moda</li><li>Games</li><li>Bebê</li><li>Pet</li><li>Esporte e fitness</li><li>Ferramentas</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- NA MÃO x AUTOMÁTICO -->
+  <section class="sec" id="comparar">
+    <div class="wrap">
+      <div class="head rv">
+        <span class="kicker">Na mão x no automático</span>
+        <h2 class="h2">Tudo o que você faz na mão, o robô faz sozinho.</h2>
+        <p class="sub">Divulgar link de afiliado dá trabalho todo dia, e o dia em que você para é o dia em que o grupo esfria. Ele tira essa rotina de você.</p>
+      </div>
+      <div class="cmp rv" role="table" aria-label="Comparação entre postar na mão e usar o robô">
+        <div class="cmp__row cmp__row--h" role="row"><div role="columnheader"></div><div class="cmp__no" role="columnheader">Na mão</div><div class="cmp__yes" role="columnheader">Com o robô</div></div>
+        <div class="cmp__row" role="row"><div role="rowheader">Achar ofertas boas</div><div class="cmp__no" role="cell">Você procura loja por loja, todo dia</div><div class="cmp__yes" role="cell">Ele garimpa nas categorias que você escolhe</div></div>
+        <div class="cmp__row" role="row"><div role="rowheader">Gerar o link de afiliado</div><div class="cmp__no" role="cell">Um por um, no painel da Shopee</div><div class="cmp__yes" role="cell">Seu link entra sozinho em cada oferta</div></div>
+        <div class="cmp__row" role="row"><div role="rowheader">Escrever a mensagem</div><div class="cmp__no" role="cell">Copia título, preço e foto na mão</div><div class="cmp__yes" role="cell">Mensagem pronta, com foto, preço e desconto</div></div>
+        <div class="cmp__row" role="row"><div role="rowheader">Conferir o preço</div><div class="cmp__no" role="cell">O preço muda e você nem percebe</div><div class="cmp__yes" role="cell">Só envia acima do desconto que você define</div></div>
+        <div class="cmp__row" role="row"><div role="rowheader">Postar</div><div class="cmp__no" role="cell">Grupo por grupo, rede por rede</div><div class="cmp__yes" role="cell">Todos os seus grupos, no horário que você define</div></div>
+        <div class="cmp__row" role="row"><div role="rowheader">Saber o que foi postado</div><div class="cmp__no" role="cell">Rolando a conversa para trás</div><div class="cmp__yes" role="cell">Histórico de tudo no painel</div></div>
+      </div>
+      <div class="cta-line rv">
+        <a class="btn btn--dark btn--sm" href="#planos" data-cta>Quero parar de postar na mão <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <p>7 dias grátis para ver a primeira oferta sair sozinha.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO COMEÇAR -->
+  <section class="sec" id="como">
+    <div class="wrap">
+      <div class="head rv">
+        <span class="kicker kicker--o">Como começar</span>
+        <h2 class="h2">Pronto para rodar em 5 minutos.</h2>
+        <p class="sub">Sem instalar nada no celular e sem deixar o computador ligado: o robô roda nos nossos servidores. Se travar em algum passo, o suporte ajuda pelo WhatsApp.</p>
+      </div>
+      <div class="steps">
+        <article class="step rv">
+          <span class="step__n">01</span>
+          <h3>Conecte o seu WhatsApp</h3>
+          <p>Pelo QR Code, do mesmo jeito que você entra no WhatsApp Web. O Telegram também, se quiser.</p>
+          <div class="mini"><div class="qr" id="qr" aria-hidden="true"></div><span class="tag">✓ WhatsApp conectado</span></div>
+        </article>
+        <article class="step rv">
+          <span class="step__n">02</span>
+          <h3>Conecte sua conta de afiliado</h3>
+          <p>Na Shopee, é só colar o App ID e a senha da API de afiliados. É no painel da própria Shopee.</p>
+          <div class="mini"><div class="card-row"><i class="dot"></i>Shopee<span class="tag">Conectada</span></div><div class="card-row"><i class="dot dot--tg"></i>Telegram<span class="tag">Conectado</span></div></div>
+        </article>
+        <article class="step rv">
+          <span class="step__n">03</span>
+          <h3>Escolha grupos e categorias, e ligue</h3>
+          <p>Defina o horário e o intervalo dos envios. A primeira oferta sai em minutos, e daí em diante é só deixar rodando.</p>
+          <div class="mini">
+            <div class="sw-row"><div><b>Ofertas Shopee do Dia</b><small>Casa e cozinha · 8h às 22h</small></div><span class="sw"></span></div>
+            <div class="sw-row"><div><b>Beleza VIP</b><small>Beleza e perfumes · 9h às 21h</small></div><span class="sw"></span></div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- OFERTAS -->
+  <section class="sec" id="ofertas">
+    <div class="wrap">
+      <div class="head rv" style="margin-bottom:40px">
+        <span class="kicker">Ofertas</span>
+        <h2 class="h2">O robô busca as ofertas direto na Shopee.</h2>
+        <p class="sub">Duas coisas rodando juntas: o garimpo das ofertas e o envio para os seus grupos.</p>
+      </div>
+      <div class="tabs rv" role="tablist" aria-label="Como o robô acha as ofertas">
+        <button class="tab" role="tab" type="button" id="tab-a" aria-selected="true" aria-controls="panel-a">Garimpo próprio</button>
+        <button class="tab" role="tab" type="button" id="tab-b" aria-selected="false" aria-controls="panel-b" tabindex="-1">Clonar grupos</button>
+      </div>
+
+      <div class="feature panel rv" role="tabpanel" id="panel-a" aria-labelledby="tab-a">
+        <div>
+          <span class="kicker">Garimpo próprio</span>
+          <h3>O robô busca as ofertas da Shopee sozinho.</h3>
+          <p>Você escolhe as categorias (eletrônicos, casa, beleza, moda e muito mais) e ele encontra os produtos com desconto, troca pelo seu link e publica no horário do grupo.</p>
+          <ul class="list">
+            <li>Desconto mínimo, nota e vendas que você define</li>
+            <li>Só produtos com foto, para a oferta chamar atenção</li>
+            <li>Sem repetir o mesmo produto por vários dias</li>
+          </ul>
+        </div>
+        <div class="engine" aria-hidden="true">
+          <div class="engine__top"><span>Envio automático</span><span class="tag"><i class="dot"></i>Ligado</span></div>
+          <div class="flow"><span class="on"><i>1</i>Buscar oferta</span><hr><span><i>2</i>Converter link</span><hr><span><i>3</i>Enviar</span></div>
+          <div class="search"><img src="/static/img/cozinha.jpg" alt="" width="52" height="52" loading="lazy"><div>Buscando ofertas com desconto real…<span class="bar"></span></div></div>
+          <div class="url">s.shopee.com.br/7AbQ2x</div>
+          <div class="dest"><i style="background:var(--wa)"></i><div><b>Ofertas Shopee do Dia</b><small>WhatsApp · a cada 5 min</small></div><em>Na fila</em></div>
+          <div class="dest"><i style="background:var(--tg)"></i><div><b>Canal Ofertas Shopee</b><small>Telegram · a cada 5 min</small></div><em>Na fila</em></div>
+        </div>
+      </div>
+
+      <div class="feature panel" role="tabpanel" id="panel-b" aria-labelledby="tab-b" hidden>
+        <div>
+          <span class="kicker">Clonar grupos</span>
+          <h3>Aproveite os grupos de promoção que você já acompanha.</h3>
+          <p>Cole o link de um canal público do Telegram ou de um grupo de WhatsApp de promoções. O robô lê só os links da Shopee de lá, busca o produto de novo, troca pelo seu link e posta no seu grupo.</p>
+          <ul class="list">
+            <li>Só o link é aproveitado: a mensagem é montada com o seu modelo</li>
+            <li>Modo “só clonar” ou “clonar e também garimpar”</li>
+            <li>Os mesmos filtros de desconto valem para o que vem do grupo</li>
+          </ul>
+        </div>
+        <div class="engine" aria-hidden="true">
+          <div class="engine__top"><span>Grupo de origem</span><span class="tag"><i class="dot"></i>Lendo</span></div>
+          <div class="flow"><span class="on"><i>1</i>Ler links</span><hr><span><i>2</i>Trocar pelo seu</span><hr><span><i>3</i>Postar</span></div>
+          <div class="url" style="color:var(--muted)">t.me/s/<b style="color:var(--ink)">canal_de_promocoes</b></div>
+          <div class="url">shopee.com.br/produto/i.8823… <b style="color:var(--muted)">→</b> s.shopee.com.br/2Xk9pQ</div>
+          <div class="dest"><i style="background:var(--wa)"></i><div><b>Ofertas Shopee do Dia</b><small>WhatsApp · seu link</small></div><em>Na fila</em></div>
+          <div class="dest"><i style="background:var(--tg)"></i><div><b>Canal Ofertas Shopee</b><small>Telegram · seu link</small></div><em>Na fila</em></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CANAIS -->
+  <section class="sec" id="canais">
+    <div class="wrap">
+      <div class="head rv">
+        <span class="kicker">Onde divulgar</span>
+        <h2 class="h2">Onde postar? No WhatsApp e no Telegram, ao mesmo tempo.</h2>
+        <p class="sub">A mesma oferta sai em cada canal no formato certo, cada um com o seu horário e o seu ritmo.</p>
+      </div>
+      <div class="channels">
+        <article class="chan rv"><span class="ico ico--wa"></span><h3>Grupos de WhatsApp</h3><p>Envio nos seus grupos, no horário que você define.</p></article>
+        <article class="chan rv"><span class="ico ico--tg"></span><h3>Grupos do Telegram</h3><p>Posta no grupo pelo seu bot, com foto e link.</p></article>
+        <article class="chan rv"><span class="ico ico--tg"></span><h3>Canais do Telegram</h3><p>Para quem divulga em canal e quer escala.</p></article>
+        <article class="chan chan--soon rv"><span class="ico ico--soon"></span><h3>Mais canais</h3><p>Novos destinos entram aos poucos.</p><span class="tag">Em breve</span></article>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANOS -->
+  <section class="sec" id="planos">
+    <div class="wrap">
+      <div class="head rv">
+        <span class="kicker">Planos e preços</span>
+        <h2 class="h2">Comece grátis. Depois, a partir de R$ 1 por dia.</h2>
+        <p class="sub">Sem fidelidade e sem letra miúda: 30 dias de acesso a cada pagamento por Pix.</p>
+      </div>
+      <div class="plans">
+        <article class="plan rv">
+          <h3>Essencial</h3><p class="plan__for">Para começar a postar no automático</p>
+          <div class="price"><small>R$</small><b>29,90</b><span>/mês</span></div><p class="perday">≈ R$ 1,00 por dia</p>
+          <a class="btn btn--light" href="#planos" data-cta data-plan="Essencial">Testar 7 dias grátis <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <ul><li>1 canal: WhatsApp ou Telegram</li><li>Ofertas da Shopee com o seu link</li><li>Foto, preço e desconto em cada oferta</li><li>Painel com histórico de envios</li><li>Suporte por WhatsApp</li></ul>
+        </article>
+        <article class="plan plan--hot rv">
+          <span class="plan__flag">Mais escolhido</span>
+          <h3>Completo</h3><p class="plan__for">Para vender todo dia nos dois canais</p>
+          <div class="price"><small>R$</small><b>49,90</b><span>/mês</span></div><p class="perday">≈ R$ 1,66 por dia</p>
+          <a class="btn btn--dark" href="#planos" data-cta data-plan="Completo">Testar 7 dias grátis <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <ul><li>WhatsApp e Telegram juntos</li><li>Todos os nichos de ofertas</li><li>Horário e intervalo de envio</li><li>Painel com histórico de envios</li><li>Suporte por WhatsApp</li></ul>
+        </article>
+        <article class="plan rv">
+          <h3>Pro</h3><p class="plan__for">Para quem tem vários grupos e canais</p>
+          <div class="price"><small>R$</small><b>79,90</b><span>/mês</span></div><p class="perday">≈ R$ 2,66 por dia</p>
+          <a class="btn btn--light" href="#planos" data-cta data-plan="Pro">Testar 7 dias grátis <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          <ul><li>Tudo do plano Completo</li><li>Mais grupos e canais conectados</li><li>Mais ofertas a cada rodada</li><li>Suporte prioritário</li><li>Novidades antes de todo mundo</li></ul>
+        </article>
+      </div>
+      <div class="notes">
+        <div class="note rv"><i></i><div><b>Teste grátis</b><p>7 dias para ver a primeira oferta sair sozinha. Você não paga nada hoje.</p></div></div>
+        <div class="note rv"><i></i><div><b>No Pix</b><p>Pagou, a gente libera 30 dias de acesso. Sem cartão e sem cobrança automática.</p></div></div>
+        <div class="note rv"><i></i><div><b>Não gostou?</b><p>É só não renovar. Sem multa, sem fidelidade e sem burocracia.</p></div></div>
+      </div>
+      <p class="fine">Valores mensais. Ferramenta independente, sem vínculo com a Shopee, o WhatsApp ou o Telegram.</p>
+    </div>
+  </section>
+
+  <!-- DÚVIDAS -->
+  <section class="sec" id="duvidas">
+    <div class="wrap faq">
+      <div class="faq__side rv">
+        <span class="kicker">Dúvidas</span>
+        <h2 class="h2">Antes de começar</h2>
+        <p>Não achou a sua dúvida? <a href="#planos" data-cta data-plan="">Fale com a gente no WhatsApp.</a></p>
+      </div>
+      <div class="faq__list rv" id="faqList">
+        <div class="q open"><button type="button" aria-expanded="true" aria-controls="a1" id="q1"><span>Preciso já ter um grupo de ofertas?</span><i></i></button><div class="q__a" id="a1" role="region" aria-labelledby="q1"><div><p>Não. Você pode começar com um grupo de teste e, quando criar o grupo de verdade, é só marcá-lo no painel que as ofertas passam a sair lá também.</p></div></div></div>
+        <div class="q"><button type="button" aria-expanded="false" aria-controls="a2" id="q2"><span>Funciona com a minha conta de afiliado da Shopee?</span><i></i></button><div class="q__a" id="a2" role="region" aria-labelledby="q2"><div><p>Sim. Você cola o App ID e a senha da API de afiliados (que ficam no painel da própria Shopee) e todo link sai com o seu código. As comissões continuam caindo direto na sua conta da Shopee.</p></div></div></div>
+        <div class="q"><button type="button" aria-expanded="false" aria-controls="a3" id="q3"><span>De onde vêm as ofertas?</span><i></i></button><div class="q__a" id="a3" role="region" aria-labelledby="q3"><div><p>Direto da Shopee: o robô busca produtos com desconto nas categorias que você escolher e só publica o que passa nos filtros que você define (desconto, nota, vendas, preço). Ele também pode ler grupos de promoção que você acompanha, mas sempre troca o link pelo seu.</p></div></div></div>
+        <div class="q"><button type="button" aria-expanded="false" aria-controls="a4" id="q4"><span>Como funciona o teste grátis?</span><i></i></button><div class="q__a" id="a4" role="region" aria-labelledby="q4"><div><p>São 7 dias para ver o robô trabalhando, sem pagar nada e sem cartão. Se gostar, você paga por Pix e ganha 30 dias de acesso. Se não gostar, é só não renovar.</p></div></div></div>
+        <div class="q"><button type="button" aria-expanded="false" aria-controls="a5" id="q5"><span>Preciso deixar o computador ou o celular ligado?</span><i></i></button><div class="q__a" id="a5" role="region" aria-labelledby="q5"><div><p>Não. O robô roda nos nossos servidores, 24 horas por dia. Você só usa o celular na hora de conectar o WhatsApp pelo QR Code.</p></div></div></div>
+        <div class="q"><button type="button" aria-expanded="false" aria-controls="a6" id="q6"><span>O WhatsApp pode banir meu número?</span><i></i></button><div class="q__a" id="a6" role="region" aria-labelledby="q6"><div><p>O WhatsApp não oferece uma ferramenta oficial para esse tipo de envio, então existe um risco, mesmo que baixo. Para reduzir, o robô respeita limites de mensagens por hora e por dia e um intervalo mínimo entre elas, e só posta em grupos. Se preferir risco zero nesse ponto, use só o Telegram, que tem robôs oficiais. Recomendamos usar um número que não seja o seu principal.</p></div></div></div>
+        <div class="q"><button type="button" aria-expanded="false" aria-controls="a7" id="q7"><span>Como pago e quando renova?</span><i></i></button><div class="q__a" id="a7" role="region" aria-labelledby="q7"><div><p>Por Pix. Pagou, a gente libera 30 dias de acesso, e renovar antes de vencer soma os dias. Perto do vencimento o robô avisa você. Se não renovar, ele pausa sozinho: sem cobrança automática e sem multa.</p></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAMADA FINAL -->
+  <section class="final">
+    <div class="final__box rv">
+      <div class="final__glow final__glow--a"></div><div class="final__glow final__glow--b"></div>
+      <h2>Menos trabalho manual.<br>Mais vendas.</h2>
+      <p>Coloque seus grupos no automático hoje — e veja a diferença ainda esta semana.</p>
+      <div class="final__btns">
+        <a class="btn btn--white" href="#planos" data-cta>Começar teste grátis <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+        <a class="btn btn--ghost" href="#planos">Ver planos</a>
+      </div>
+      <ul class="micro"><li>Não paga nada hoje</li><li>Cancele quando quiser</li><li>Suporte incluso</li></ul>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <img src="/static/img/tiko-logo-animado-intro.svg" alt="TIKO" width="143" height="42" loading="lazy">
+    <p class="foot__copy">© 2026 TIKO. Todos os direitos reservados.</p>
+    <nav aria-label="Rodapé"><a href="#planos">Planos</a><a href="#como">Como funciona</a><a href="#duvidas">Dúvidas</a><a href="#planos" data-cta data-plan="">Suporte por WhatsApp</a></nav>
+    <p class="foot__legal">Ferramenta independente, sem vínculo com a Shopee, o WhatsApp ou o Telegram. As comissões dependem das vendas feitas pelos seus links.</p>
+  </div>
+</footer>
+
+<dialog id="aviso" aria-labelledby="avisoT">
+  <h3 id="avisoT">Aviso</h3>
+  <p id="avisoP"></p>
+  <div class="cta-row"><button class="btn btn--dark btn--sm" type="button" id="avisoOk">Entendi</button></div>
+</dialog>
+
+<script src="/static/vendas.js" defer></script>
+</body>
+</html>

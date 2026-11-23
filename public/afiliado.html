@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Ligar meu robô de ofertas</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23ee4d2d%27/%3E%3Ctext x=%2716%27 y=%2722%27 font-size=%2718%27 text-anchor=%27middle%27%3E🛒%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="steps" id="page" hidden>
+  <div class="brand" style="margin-bottom:20px"><span class="logo">🛒</span> Robô de Ofertas <span class="pill" id="who" style="margin-left:8px"></span></div>
+
+  <div class="note" id="planBar" hidden style="margin-bottom:16px"></div>
+
+  <!-- ===== PASSO A PASSO ===== -->
+  <div id="wizard">
+    <div class="hero">
+      <p class="kicker">Bem-vindo</p>
+      <h1 class="wiztitle">Vamos ligar o seu robô de ofertas</h1>
+      <p class="mut wizlead">São poucos passos. Eu te guio um de cada vez e a tela avança sozinha.</p>
+    </div>
+    <ol class="stepper" id="stepper" aria-label="Progresso"></ol>
+
+    <!-- Shopee -->
+    <section class="card wiz" data-step="shopee" hidden>
+      <p class="kicker"></p>
+      <h2>Conecte a sua conta da Shopee</h2>
+      <p class="sub">É daqui que vêm os seus links de afiliado e as suas comissões. Copie e cole os dois códigos abaixo.</p>
+      <div class="grid g2">
+        <label>AppID <input data-path="shopee.appId" autocomplete="off" inputmode="numeric" placeholder="ex.: 1234567890"></label>
+        <label>Secret <input data-path="shopee.secret" data-secret data-set="secretSet" data-hint="secretHint" data-empty="cole o Secret aqui" type="password" autocomplete="new-password"></label>
+      </div>
+      <details>
+        <summary>Onde encontro o AppID e o Secret?</summary>
+        <ol>
+          <li>Entre em <b>affiliate.shopee.com.br</b> com a sua conta de afiliado.</li>
+          <li>Abra o menu <b>Open API</b>.</li>
+          <li>Copie o <b>AppID</b> e o <b>Secret</b>.</li>
+          <li>Se não achar o menu <b>Open API</b>, a sua conta ainda não foi liberada. Peça a liberação à Shopee.</li>
+        </ol>
+      </details>
+      <div class="row" style="margin-top:16px"><button class="btn primary big" id="shopeeNext" type="button">Continuar</button></div>
+      <div class="msg" id="shopeeMsg" hidden></div>
+    </section>
+
+    <!-- Robô do Telegram -->
+    <section class="card wiz" data-step="bot" hidden>
+      <p class="kicker"></p>
+      <h2>Crie o seu robô no Telegram</h2>
+      <div id="autoCreate" hidden>
+        <p class="sub">É um clique. O Telegram abre sozinho e cria o robô para você.</p>
+        <div class="row"><a class="btn primary big" id="createBot" href="#" target="_blank" rel="noopener noreferrer">🤖 Criar meu robô no Telegram</a></div>
+        <ol class="mini">
+          <li>No Telegram, aperte <b>Criar</b>. Não precisa mudar nada.</li>
+          <li><b>Volte para esta página.</b> Eu percebo sozinho e mostro o próximo passo.</li>
+        </ol>
+        <p class="waitline" id="botWait">⏳ Esperando você criar o robô…</p>
+      </div>
+      <div id="manualBot" hidden>
+        <p class="sub">Vamos criar o seu robô pelo Telegram. Leva 1 minuto.</p>
+        <ol class="mini">
+          <li>No Telegram, procure por <b>@BotFather</b> e abra a conversa.</li>
+          <li>Envie a mensagem <code>/newbot</code> e responda o que ele perguntar (um nome e um usuário que termine com <code>bot</code>).</li>
+          <li>Ele envia uma mensagem com o <b>token</b>. Copie e cole aqui:</li>
+        </ol>
+        <label>Token do robô <input data-path="telegram.token" data-secret data-set="tokenSet" data-hint="tokenHint" data-empty="123456789:AAxxxxxxxx" type="password" autocomplete="new-password"></label>
+        <div class="row" style="margin-top:14px"><button class="btn primary big" id="tokenNext" type="button">Continuar</button></div>
+        <div class="msg" id="tokenMsg" hidden></div>
+      </div>
+    </section>
+
+    <!-- Destino das ofertas -->
+    <section class="card wiz" data-step="dest" hidden>
+      <p class="kicker"></p>
+      <h2>Onde as ofertas vão aparecer?</h2>
+      <div id="destChoose">
+        <p class="sub">Escolha uma opção.</p>
+        <div class="choices">
+          <button class="choice" id="chooseGroup" type="button"><b>👥 Em um grupo ou canal</b><small>Para divulgar as ofertas para outras pessoas.</small></button>
+          <button class="choice" id="choosePrivate" type="button"><b>💬 Só para mim</b><small>As ofertas chegam na minha conversa com o robô. Bom para testar.</small></button>
+        </div>
+      </div>
+
+      <div id="destGroup" hidden>
+        <ol class="bigsteps">
+          <li>
+            <span>Crie um grupo no Telegram</span>
+            <small>Toque no lápis ✏️ → <b>Novo grupo</b> → escolha 1 contato qualquer → dê um nome (ex.: Minhas Ofertas) → <b>Criar</b>. Se preferir, pode ser um <b>Novo canal</b>.</small>
+          </li>
+          <li>
+            <span>Coloque o robô nesse grupo</span>
+            <small>Clique no botão laranja. O Telegram abre: escolha o grupo que você criou e confirme <b>Adicionar como administrador</b>.</small>
+            <div class="row">
+              <a class="btn primary big" id="addGroup" href="#" target="_blank" rel="noopener noreferrer">➕ Adicionar o robô ao meu grupo</a>
+              <a class="btn" id="addChannel" href="#" target="_blank" rel="noopener noreferrer">📢 É um canal? Clique aqui</a>
+            </div>
+          </li>
+          <li>
+            <span>Pronto! Volte para esta página</span>
+            <small>Eu percebo sozinho quando o robô entrar no grupo.</small>
+            <p class="waitline" id="groupWait">⏳ Esperando o robô entrar no grupo…</p>
+            <p class="sub" id="groupNote" style="margin:0 0 10px"></p>
+            <div class="chips" id="groupChips" style="margin-bottom:10px"></div>
+            <button class="btn" id="checkGroup" type="button">Já fiz, verificar agora</button>
+          </li>
+        </ol>
+        <button class="linkbtn" id="backFromGroup" type="button">← Escolher outra opção</button>
+      </div>
+
+      <div id="destPrivate" hidden>
+        <ol class="bigsteps">
+          <li>
+            <span>Abra o seu robô e toque em <b>Iniciar</b></span>
+            <small>No Telegram, abra a conversa com o robô e toque em <b>Iniciar</b> (ou envie <code>/start</code>).</small>
+            <div class="row"><a class="btn primary big" id="openBot" href="#" target="_blank" rel="noopener noreferrer">💬 Abrir o meu robô</a></div>
+          </li>
+          <li>
+            <span>Volte para esta página</span>
+            <small>Eu percebo sozinho.</small>
+            <p class="waitline" id="privWait">⏳ Esperando você tocar em Iniciar…</p>
+            <p class="sub" id="privNote" style="margin:0 0 10px"></p>
+            <button class="btn" id="checkPrivate" type="button">Já fiz, verificar agora</button>
+          </li>
+        </ol>
+        <button class="linkbtn" id="backFromPrivate" type="button">← Escolher outra opção</button>
+      </div>
+      <input type="hidden" data-path="telegram.chatId">
+    </section>
+
+    <!-- WhatsApp (clientes só de WhatsApp) -->
+    <section class="card wiz" data-step="wa" hidden>
+      <p class="kicker"></p>
+      <h2>Conecte o WhatsApp</h2>
+      <p class="sub">Use um chip dedicado (não o seu número principal). Siga os passos abaixo: conectar o número e indicar o seu grupo. Se quiser, indique também um grupo de ofertas para clonar.</p>
+      <div id="waStepHost"></div>
+      <div class="row" style="margin-top:16px"><button class="btn primary big" id="waNext" type="button">Continuar</button></div>
+      <div class="msg" id="waStepMsg" hidden></div>
+    </section>
+
+    <!-- Nicho -->
+    <section class="card wiz" data-step="niche" hidden>
+      <p class="kicker"></p>
+      <h2>Sobre o que são as suas ofertas?</h2>
+      <p class="sub">Toque no assunto que mais combina com o seu público. Pode escolher até 6.</p>
+      <div id="nicheMount"></div>
+      <div class="row" style="margin-top:16px"><button class="btn primary big" id="nicheNext" type="button">Continuar</button></div>
+    </section>
+
+    <!-- Ligar -->
+    <section class="card wiz" data-step="go" hidden>
+      <p class="kicker"></p>
+      <h2 id="goTitle">Tudo pronto! Estou ligando o seu robô…</h2>
+      <ul class="checks" id="goList"></ul>
+      <div class="msg" id="goMsg" hidden></div>
+      <div class="row" style="margin-top:14px"><button class="btn primary" id="goRetry" type="button" hidden>Tentar de novo</button></div>
+    </section>
+  </div>
+
+  <!-- ===== ROBÔ LIGADO ===== -->
+  <div id="live" hidden>
+    <div class="hero live">
+      <p class="kicker">Olá, <span id="liveWho"></span></p>
+      <h1 id="liveTitle">🟢 Seu robô está ligado</h1>
+      <p class="sub" id="liveSub" style="margin:6px 0 14px"></p>
+      <div class="row"><button class="btn" id="pauseBtn" type="button" hidden>⏸ Pausar</button><button class="btn primary" id="resumeBtn" type="button" hidden>▶ Ligar de novo</button></div>
+    </div>
+    <div id="lastOffer" hidden></div>
+    <div class="card" id="actCard">
+      <h3>Atividade</h3>
+      <div class="grid g3" style="margin:12px 0">
+        <div class="stat"><span>Próxima rodada</span><b id="sNext">—</b></div>
+        <div class="stat"><span>Ofertas publicadas</span><b id="sPosted">0</b></div>
+        <div class="stat"><span>Último erro</span><b id="sErr" style="font-size:13px;font-weight:600;color:var(--mut)">nenhum</b></div>
+      </div>
+      <div id="recent" class="list"></div>
+    </div>
+    <div class="card">
+      <h3>Mudar alguma coisa</h3>
+      <div class="row" style="margin-top:10px">
+        <button class="btn" id="editShopee" type="button">Conta da Shopee</button>
+        <button class="btn" id="editDest" type="button">Grupo ou privado</button>
+        <button class="btn" id="editWa" type="button" hidden>Grupos de WhatsApp</button>
+        <button class="btn" id="editNiche" type="button">Nicho</button>
+      </div>
+      <details style="margin-top:14px">
+        <summary>⚙️ Ajustes (opcional)</summary>
+        <div class="grid g3" style="margin-top:14px">
+          <label>Desconto mínimo (%) <input type="number" min="0" max="95" data-path="filters.minDiscount" data-type="number"></label>
+          <label>Postar a cada
+            <select data-path="schedule.intervalMinutes" data-type="number">
+              <option value="15">15 minutos</option><option value="30">30 minutos</option><option value="60">1 hora</option>
+              <option value="120">2 horas</option><option value="240">4 horas</option>
+            </select></label>
+          <label>Ofertas por rodada <input type="number" min="1" max="10" data-path="schedule.postsPerCycle" data-type="number"></label>
+        </div>
+        <p style="margin:16px 0 6px"><b>Palavras minhas (opcional)</b></p>
+        <p class="sub" style="margin:0 0 8px">Uma por linha, bem específica (ex.: <code>lençol queen 400 fios</code>). São somadas ao nicho.</p>
+        <textarea data-path="search.keywords" data-type="lines" rows="3" placeholder="lençol queen 400 fios&#10;toalha de banho gigante"></textarea>
+        <p style="margin:16px 0 6px"><b>📡 Clonar um canal de ofertas (opcional)</b></p>
+        <p class="sub" style="margin:0 0 8px">Cole o endereço de um canal <b>público</b> do Telegram, um por linha (ex.: <code>t.me/nomedocanal</code>). O robô lê só os links da Shopee de lá e posta com o <b>seu</b> link de afiliado. Nada do texto ou das fotos do outro canal é copiado.</p>
+        <textarea data-path="source.channels" data-type="lines" rows="3" placeholder="t.me/canaldeofertas"></textarea>
+        <div class="grid g2" style="margin-top:12px">
+          <label>Como usar os canais
+            <select data-path="source.mode"><option value="only">Postar só o que os canais publicam</option><option value="mix">Canais primeiro e completar com as minhas palavras-chave</option></select></label>
+          <label class="check" style="align-self:end"><input type="checkbox" data-path="source.applyFilters"> Aplicar meus filtros (desconto mínimo etc.)</label>
+        </div>
+        <div class="row" style="margin-top:12px"><button class="btn" id="testSource" type="button">Testar canal</button></div>
+        <div class="msg" id="srcMsg" hidden></div>
+        <div class="row" style="margin-top:18px"><button class="btn primary" id="saveSettings" type="button">Salvar ajustes</button></div>
+        <div class="msg" id="settingsMsg" hidden></div>
+      </details>
+      <details id="waDetails" style="margin-top:12px">
+        <summary>💬 <span id="waSummary">WhatsApp: postar no meu grupo e clonar outro grupo</span> <span class="pill warn" id="waOpt" style="margin-left:6px">opcional</span></summary>
+        <div id="waMount" style="margin-top:10px"></div>
+      </details>
+    </div>
+  </div>
+</div>
+
+<div id="dead" class="center" hidden>
+  <div class="card auth"><div class="brand"><span class="logo">🛒</span> Robô de Ofertas</div>
+    <h1 style="font-size:20px;margin-top:14px">Link inválido</h1>
+    <p class="mut" id="deadMsg"></p></div>
+</div>
+
+<div id="toast"></div>
+<script src="/static/common.js"></script>
+<script src="/static/wa-ui.js"></script>
+<script src="/static/niche-ui.js"></script>
+<script src="/static/afiliado.js"></script>
+</body>
+</html>

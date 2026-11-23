@@ -1,0 +1,14 @@
+services:
+  robo-ofertas:
+    build: .
+    restart: unless-stopped
+    ports: ["3000:3000"]
+    environment:
+      # Defina uma senha forte (ou deixe em branco para criar pelo painel, usando o código que aparece nos logs)
+      ADMIN_PASSWORD: ""
+      # Use 1 quando estiver atrás de proxy HTTPS (Caddy, Nginx, Cloudflare...)
+      TRUST_PROXY: "0"
+    volumes:
+      - robo-dados:/data
+volumes:
+  robo-dados:
