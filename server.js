@@ -24,12 +24,14 @@ const SESSION_MS = 7 * 86400000;
 
 const { Managed } = require('./src/managed');
 const { WhatsApp } = require('./src/whatsapp');
+const { TgBot } = require('./src/tg-bot');
 
 const store = new Store(DATA_DIR);
 const engine = new Engine(store);
 const managed = new Managed(store);
 const wa = new WhatsApp(store, DATA_DIR);
 engine.wa = wa;
+const tgBot = new TgBot(store, engine, wa);
 
 /* ───────────── Segurança: chave de sessão, senha, limites ───────────── */
 const keyFile = path.join(DATA_DIR, 'secret.key');
@@ -190,6 +192,7 @@ function updateBot(bot, input, scope) {
   applyInput(draft, input, scope);
   Object.assign(bot, draft);
   store.saveConfig();
+  tgBot.sync(bot); // token do Telegram pode ter mudado: reinicia o bot interativo com o token certo
 }
 
 function summary(bot) {
@@ -503,6 +506,7 @@ route('POST', '/api/bots', adminOnly((ctx) => {
 sharedRoutes('/api/bots/:id', adminBot);
 route('DELETE', '/api/bots/:id', adminBot(async (bot) => {
   await wa.disconnect(bot.id);
+  tgBot.stop(bot.id);
   store.removeBot(bot.id);
   return { ok: true };
 }));
@@ -647,7 +651,8 @@ function start() {
       }
       if (managed.available()) managed.restart();
       wa.resumeAll().catch(() => {});
-      resolve({ server, port: addr.port, store, engine, managed, wa, tick });
+      tgBot.syncAll();
+      resolve({ server, port: addr.port, store, engine, managed, wa, tgBot, tick });
     });
   });
 }

@@ -381,6 +381,31 @@ class Engine {
     }
   }
 
+  // Resolve um link avulso (colado pelo afiliado) em {product, link, html, waHtml}, SEM publicar nada.
+  // Usado pela prévia do bot do Telegram antes de a pessoa confirmar a publicação.
+  async prepareLink(bot, raw) {
+    const miss = missingSetup(bot, { needTelegram: false });
+    if (miss.length) throw new Error(`Falta configurar: ${miss.join(' e ')}.`);
+    const client = this.client(bot.shopee);
+    const subIds = bot.shopee.subId ? [bot.shopee.subId] : [];
+    const resolved = await resolveShopeeUrl(String(raw || '').trim());
+    const ids = parseShopeeUrl(resolved);
+    let product = null;
+    if (ids) {
+      const { products } = await client.searchProducts({ itemId: ids.itemId, shopId: ids.shopId, limit: 1 });
+      product = products.find((p) => p.itemId === ids.itemId) || null;
+    }
+    const origin = ids ? `https://shopee.com.br/product/${ids.shopId}/${ids.itemId}` : resolved;
+    const link = await client.generateShortLink(product ? productUrl(product) : origin, subIds);
+    if (!product) return { product: null, link, html: `🛒 Confira essa oferta:\n${link}`, waHtml: `🛒 Confira essa oferta:\n${link}` };
+    return {
+      product,
+      link,
+      html: render(bot.message.template, product, link),
+      waHtml: render(pickWaTemplate(bot.message.template), product, link),
+    };
+  }
+
   // Posta links específicos que o afiliado colar no painel.
   async postLinks(bot, urls) {
     if (this.running.has(bot.id)) throw new Error('O robô está executando um ciclo agora. Tente em instantes.');

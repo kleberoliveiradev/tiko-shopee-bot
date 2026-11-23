@@ -84,6 +84,40 @@ async function sendProduct(token, chatId, { image, html }) {
 const getMe = (token) => call(token, 'getMe');
 const sendText = (token, chatId, text) => call(token, 'sendMessage', { chat_id: chatId, text });
 
+// --- Bot interativo (publicação manual pelo Telegram) ---------------------------------------------
+
+// Mensagem com botões inline; foto quando há imagem, senão texto. Devolve { message_id, photo }.
+async function sendWithButtons(token, chatId, { image, html, keyboard }) {
+  const reply_markup = { inline_keyboard: keyboard };
+  if (image) {
+    try {
+      const m = await withHtmlFallback(token, 'sendPhoto', { chat_id: chatId, photo: image, caption: html, reply_markup });
+      return { message_id: m.message_id, photo: true };
+    } catch (e) {
+      if (!/photo|image|http url|wrong file|wrong type|web page content|caption is too long|failed to get/i.test(e.raw || e.message)) throw e;
+    }
+  }
+  const m = await withHtmlFallback(token, 'sendMessage', { chat_id: chatId, text: html, reply_markup });
+  return { message_id: m.message_id, photo: false };
+}
+
+// Troca o texto/legenda final (ex.: "✅ Publicado") e tira os botões.
+async function finishMessage(token, chatId, messageId, text, isPhoto) {
+  const method = isPhoto ? 'editMessageCaption' : 'editMessageText';
+  const key = isPhoto ? 'caption' : 'text';
+  try {
+    await call(token, method, { chat_id: chatId, message_id: messageId, [key]: text, reply_markup: { inline_keyboard: [] } });
+  } catch { /* a mensagem pode já ter sido apagada ou editada; não é crítico */ }
+}
+
+function answerCallback(token, id, text, alert = false) {
+  return call(token, 'answerCallbackQuery', { callback_query_id: id, text: text ? String(text).slice(0, 200) : undefined, show_alert: alert }).catch(() => {});
+}
+
+function getUpdates(token, offset) {
+  return call(token, 'getUpdates', { offset, timeout: 25, allowed_updates: ['message', 'callback_query'] });
+}
+
 // Lista os chats em que o bot apareceu (para o afiliado escolher o grupo sem precisar caçar o ID).
 // O Telegram só aceita UM getUpdates por vez para o mesmo bot (senão responde "Conflict"). Como a página
 // consulta sozinha a cada poucos segundos e a pessoa também clica no botão, as chamadas simultâneas
@@ -126,4 +160,7 @@ function detectAll(token) {
 // Só grupos e canais (o que o painel e o botão "Detectar grupo" mostram).
 const detectChats = (token) => detectAll(token).then((r) => r.groups);
 
-module.exports = { call, sendProduct, sendText, getMe, detectChats, detectAll, TelegramError, stripHtml };
+module.exports = {
+  call, sendProduct, sendText, getMe, detectChats, detectAll, TelegramError, stripHtml,
+  sendWithButtons, finishMessage, answerCallback, getUpdates,
+};

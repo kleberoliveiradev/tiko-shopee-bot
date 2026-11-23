@@ -26,7 +26,7 @@ const ok = (name) => { passed++; console.log(`  ✓ ${name}`); };
   const tg = await startTelegramMock();
   const dataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'robo-'));
   Object.assign(process.env, {
-    SHOPEE_API_URL: shopee.url, TELEGRAM_API_URL: tg.url, TELEGRAM_WEB_URL: tg.url, WA_DRIVER: path.join(__dirname, 'wa-fake.js'), WA_TIME_SCALE: '0', DATA_DIR: dataDir, ADMIN_PASSWORD: 'senha-super-123',
+    SHOPEE_API_URL: shopee.url, TELEGRAM_API_URL: tg.url, TELEGRAM_WEB_URL: tg.url, TG_BOT_DISABLED: '1', WA_DRIVER: path.join(__dirname, 'wa-fake.js'), WA_TIME_SCALE: '0', DATA_DIR: dataDir, ADMIN_PASSWORD: 'senha-super-123',
     PORT: '0', HOST: '127.0.0.1', QUIET: '1', SHOPEE_MIN_GAP_MS: '0', SHOPEE_RETRY_SCALE: '0', SCHEDULER_TICK_MS: '300', PLAN_CHARGE_NEW: '0',
     MANAGER_POLL_SEC: '0', MANAGER_IDLE_MS: '100',
   });

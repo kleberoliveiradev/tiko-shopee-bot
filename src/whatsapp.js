@@ -310,6 +310,23 @@ class WhatsApp {
     this.work(bot.id).catch(() => {});
   }
 
+  // Publicação manual: a pessoa mandou um link para o bot do Telegram, viu a prévia e apertou "Publicar".
+  // Diferente de enqueue(): não depende do robô automático estar "ligado" (w.enabled) — é um ato deliberado
+  // da pessoa — mas respeita as mesmas proteções contra banimento (canSend/rampFactor, fila, pausas).
+  // jid: id de um grupo específico, ou vazio/null para publicar em todos os grupos de destino.
+  publishNow(bot, { html, image, jid } = {}) {
+    if (!ensureChannels(bot).whatsapp) throw new Error('O WhatsApp não está incluído no seu plano.');
+    const w = bot.whatsapp || {};
+    const targets = jid ? [jid] : (w.groupIds || []);
+    if (!targets.length) throw new Error('Nenhum grupo de WhatsApp conectado ainda. Conecte e adicione um grupo de destino primeiro.');
+    const s = this.sessions.get(bot.id);
+    if (!s || s.state !== 'open') throw new Error('O WhatsApp ainda não está conectado.');
+    if (s.queue.length >= 20) throw new Error('Fila cheia: aguarde o envio das últimas ofertas antes de mandar outra.');
+    s.queue.push({ text: toWhatsapp(html), image: w.includeImage !== false ? image : '', at: Date.now(), jids: targets });
+    this.work(bot.id).catch(() => {});
+    return { ok: true, groups: targets.length };
+  }
+
   async sendOne(bot, s, jid, item) {
     try {
       await s.handle.typing(jid, Math.round(rnd(1500, 4000) * scale()));
@@ -346,7 +363,7 @@ class WhatsApp {
         }
         const item = s.queue.shift();
         if (Date.now() - item.at > 3 * 3600000) continue; // oferta velha demais
-        for (const jid of w.groupIds) {
+        for (const jid of item.jids && item.jids.length ? item.jids : w.groupIds) {
           const why = this.canSend(bot, s);
           if (why) {
             this.log(id, 'warn', `oferta não enviada ao WhatsApp (${why}).`);
